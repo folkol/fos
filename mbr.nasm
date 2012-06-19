@@ -12,7 +12,7 @@ db      6,6,6,0                 ; Our disk signature is 0! (Double word = 4byte)
 
 dw      0                       ; These two bytes are usually null, according to wikipedia
         
-times   16 db 1                 ; 16 byte partition description
+times   16 db 1                 ; 16 byte partition description, see wikipedia for formatting
 times   16 db 1                 ; 16 byte partition description
 times   16 db 1                 ; 16 byte partition description
 times   16 db 1                 ; 16 byte partition description
