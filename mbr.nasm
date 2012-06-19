@@ -3,6 +3,9 @@ bits    16                      ; Yup... 16bit real mode!
 
 start:  
         cli                     ; Clear (Disable) all interrupts
+
+        ;; PRINT TEXT WITH INT 10!
+        
         hlt                     ; Halt the system
 
 
