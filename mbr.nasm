@@ -1,14 +1,24 @@
 org     7c00h                   ; We will be loaded here by BIOS INT 0x19. Offset in current segment.
 bits    16                      ; Yup... 16bit real mode!
         
-jmp     start                   ; Unconditional jump to the start label, skipping data
+        jmp start               ; Unconditional jump to the start label, skipping data
 
         ;; Text strings
-text_greeting db 'Locating Kernel...', 0
+text_greeting       db 'Locating Kernel...', 0
+text_kernel_failure db 'Failed to read kernel...', 0        
+text_kernel_loaded  db 'Successfully loaded kernel, jumping there!', 0
 
-        ;; Kernel location
-        
+        ;; Disk address packet structure
+DAPACK:
+        db  0x10                ; Sixe of packet (16 bytes)
+        db  0                   ; Always null
+blkcnt: dw  1                   ; int 13 resets this to # of blocks actually read/written
+db_add: dw  0x00FF7C00          ; memory buffer destination address (0:7c00)
+        dw  0                   ; in memory page zero
+d_lba:  dd  1                   ; put the lba to read in this spot
+        dd  0                   ; more storage bytes only for big lba's ( > 4 bytes )
 
+        ;; Boot loader entry point
 start:
         cli                     ; Disable hardware interrupts, the code is not thread safe!
         sti                     ; Enable hardware interrupts again
@@ -16,7 +26,24 @@ start:
         mov   si, text_greeting ; Set SI (String index) to 0x7c00:[text_greeting]
         call  print             ; Print routine declared below
 
-        jmp   $                 ; Jump here, infinite loop $ = current line
+        mov   si, DAPACK        ; Point out the data structure decribing the ATA read
+        mov   ah, 0x42          ; Function 42 = read from disk to mem
+        mov   dl, 0x80          ; What drive (0x80 = first hard drive?)
+        int   0x13              ; Call int 13h for disk read
+        jc    error
+
+success:        
+        mov   si, text_kernel_loaded
+        call  print
+        jmp end
+
+error:
+        mov   si, text_kernel_failure
+        call  print
+        jmp   end
+
+end:
+        jmp $                  ; Jump here, infinite loop $ = current line
 
         ;; print - will print the null terminated string in DS:SI and return
 print:                          ; Print string in 
