@@ -7,4 +7,4 @@ make a disk image with:
 cat mbr.image > disk.image
 cat kernel.image >> disk.image
 
-, run it with qemu or bochs
+run it with qemu or bochs
