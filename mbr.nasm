@@ -13,7 +13,7 @@ DAPACK:
         db  0x10                ; Sixe of packet (16 bytes)
         db  0                   ; Always null
 blkcnt: dw  1                   ; int 13 resets this to # of blocks actually read/written
-db_add: dw  0x00FF7C00          ; memory buffer destination address (0:7c00)
+db_add: dw  0x10007C00          ; memory buffer destination address (0:7c00)
         dw  0                   ; in memory page zero
 d_lba:  dd  1                   ; put the lba to read in this spot
         dd  0                   ; more storage bytes only for big lba's ( > 4 bytes )
