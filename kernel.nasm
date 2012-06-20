@@ -1,9 +1,9 @@
-org     0FF00h                   ; We will be loaded here by the FOS boot loader 0x8f00:0000
+org     0FF00h                  ; We will be loaded here by the FOS boot loader 0x8f00:0000
 bits    16                      ; Yup... 16bit real mode!
         jmp start        
 
         ;; Text strings
-text_greeting       db 'Kernel loaded and executing!', 0
+text_greeting db 'Kernel loaded and executing!', 0
 
         ;; Kernel loader entry point
 start:
@@ -12,7 +12,7 @@ start:
         jmp   end
 
 end:
-        jmp $                  ; Jump here, infinite loop $ = current line
+        jmp $                   ; Jump here, infinite loop $ = current line
 
         ;; print - will print the null terminated string in DS:SI and return
 print:                          ; Print string in 
@@ -27,4 +27,3 @@ print_done:
         ret
 
 times   512 - ($-$$)  db  0     ; fill with zeroes up until 512, end of code area
-
