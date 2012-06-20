@@ -1,7 +1,7 @@
 This is the boot loader of Folkol OS.
 
 build the MBR image with: nasm -f bin -o mbr.image mbr.nasm
-build the kernel image with: nasm -f bin -o kernel.image ../kernel/kernel.nasm
+build the kernel image with: nasm -f bin -o kernel.image kernel.nasm
 
 make a disk image with:
 cat mbr.image > disk.image

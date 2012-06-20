@@ -4,16 +4,17 @@ bits    16                      ; Yup... 16bit real mode!
         jmp start               ; Unconditional jump to the start label, skipping data
 
         ;; Text strings
-text_greeting       db 'Locating Kernel...', 0
-text_kernel_failure db 'Failed to read kernel...', 0        
-text_kernel_loaded  db 'Successfully loaded kernel, jumping there!', 0
+text_greeting       db 'Locating Kernel... ', 0
+text_kernel_failure db 'Failed to read kernel... ', 0        
+text_kernel_loaded  db 'Successfully loaded kernel... ', 0
+text_kernel_jumping db '...destination loaded, jumping there!', 0
 
         ;; Disk address packet structure
 DAPACK:
-        db  0x10                ; Sixe of packet (16 bytes)
+        db  0x10                ; Size of packet (16 bytes)
         db  0                   ; Always null
 blkcnt: dw  1                   ; int 13 resets this to # of blocks actually read/written
-db_add: dw  0x10007C00          ; memory buffer destination address (0:7c00)
+db_add: dw  0x8e00              ; memory buffer destination address (0:8e00)
         dw  0                   ; in memory page zero
 d_lba:  dd  1                   ; put the lba to read in this spot
         dd  0                   ; more storage bytes only for big lba's ( > 4 bytes )
@@ -21,6 +22,14 @@ d_lba:  dd  1                   ; put the lba to read in this spot
         ;; Boot loader entry point
 start:
         cli                     ; Disable hardware interrupts, the code is not thread safe!
+        mov ax, 07C0h           ; 
+        add ax, 288             ; 
+        mov ss, ax              ; Setup stack segment to 07c0 + 288 = 8e00h
+        mov sp, 4096            ; Set stack pointer to 8e00:4096
+        mov ax, 07C0h           ;
+        xor ax, ax
+        mov ds, ax              ; Set data segment to 07c0h
+        mov es, ax              ; Set extra segment to 07c0h
         sti                     ; Enable hardware interrupts again
         
         mov   si, text_greeting ; Set SI (String index) to 0x7c00:[text_greeting]
@@ -28,6 +37,7 @@ start:
 
         mov   si, DAPACK        ; Point out the data structure decribing the ATA read
         mov   ah, 0x42          ; Function 42 = read from disk to mem
+        mov   bx, 0x55aa
         mov   dl, 0x80          ; What drive (0x80 = first hard drive?)
         int   0x13              ; Call int 13h for disk read
         jc    error
@@ -35,7 +45,13 @@ start:
 success:        
         mov   si, text_kernel_loaded
         call  print
-        jmp end
+        xor   ax, ax            ; clear ax
+        push  ax                ; CS to 'return; to
+        mov   ax, 8e00h         ; Clear
+        push  ax                ; CP to 'return' to
+        mov   si, text_kernel_jumping
+        call  print
+        retf                    ; Return 'far', aka pop CS and CIP from the stack
 
 error:
         mov   si, text_kernel_failure
