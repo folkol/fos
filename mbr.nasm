@@ -4,7 +4,10 @@ bits    16                      ; Yup... 16bit real mode!
 jmp     start                   ; Unconditional jump to the start label, skipping data
 
         ;; Text strings
-text_greeting db 'Locating Kernel...', 0 
+text_greeting db 'Locating Kernel...', 0
+
+        ;; Kernel location
+        
 
 start:
         cli                     ; Disable hardware interrupts, the code is not thread safe!
@@ -32,10 +35,17 @@ times   440 - ($-$$)  db  0     ; fill with zeroes up until 440, end of code are
 db      6,6,6,0                 ; Our disk signature is 0! (Double word = 4byte)
 
 dw      0                       ; These two bytes are usually null, according to wikipedia
-        
-times   16 db 1                 ; 16 byte partition description, see wikipedia for formatting
-times   16 db 1                 ; 16 byte partition description
-times   16 db 1                 ; 16 byte partition description
-times   16 db 1                 ; 16 byte partition description
-        
+
+        ;;  Partition table
+db      0x80                    ; 0x80 = bootable partition
+db      0, 0x81, 0x63           ; cylinder/head/sector
+db      0x07                    ; Windows NTFS id
+db      0xef, 0xff, 0xff        ; C/H/S of last sector in this partition
+dd      0x008cf730              ; logical block address
+dd      0x041b5bd0              ; size in sectors of this partition
+
+times   16 db 0                 ; no second partition, first byte 0 for missing or unbootable
+times   16 db 0                 ; no third partitinon
+times   16 db 0                 ; no fourth partition either!
+
 dw      0xaa55                  ; Magic number for bootable sector
