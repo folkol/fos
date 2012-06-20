@@ -1,4 +1,4 @@
-org     7c00h                   ; We will be loaded here by BIOS INT 0x19
+org     7c00h                   ; We will be loaded here by BIOS INT 0x19. Offset in current segment.
 bits    16                      ; Yup... 16bit real mode!
         
 jmp     start                   ; Unconditional jump to the start label, skipping data
@@ -16,7 +16,7 @@ start:
         mov   si, text_greeting ; Set SI (String index) to 0x7c00:[text_greeting]
         call  print             ; Print routine declared below
 
-        jmp   $                 ; Jump here, infinite loop
+        jmp   $                 ; Jump here, infinite loop $ = current line
 
         ;; print - will print the null terminated string in DS:SI and return
 print:                          ; Print string in 
