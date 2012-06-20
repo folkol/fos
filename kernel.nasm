@@ -1,6 +1,7 @@
-org     0h                   ; We will be loaded here by the FOS boot loader 0x8f00:0000
+org     0FF00h                   ; We will be loaded here by the FOS boot loader 0x8f00:0000
 bits    16                      ; Yup... 16bit real mode!
         jmp start        
+
         ;; Text strings
 text_greeting       db 'Kernel loaded and executing!', 0
 
@@ -8,8 +9,6 @@ text_greeting       db 'Kernel loaded and executing!', 0
 start:
         mov   si, text_greeting ; Set SI (String index) to 0x7c00:[text_greeting]
         call  print             ; Print routine declared below
-
-        jmp $
         jmp   end
 
 end:

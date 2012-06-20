@@ -14,7 +14,7 @@ DAPACK:
         db  0x10                ; Size of packet (16 bytes)
         db  0                   ; Always null
 blkcnt: dw  1                   ; int 13 resets this to # of blocks actually read/written
-db_add: dw  0x8e00              ; memory buffer destination address (0:8e00)
+db_add: dw  0xFF00              ; memory buffer destination address (0:8e00)
         dw  0                   ; in memory page zero
 d_lba:  dd  1                   ; put the lba to read in this spot
         dd  0                   ; more storage bytes only for big lba's ( > 4 bytes )
@@ -45,9 +45,9 @@ start:
 success:        
         mov   si, text_kernel_loaded
         call  print
-        xor   ax, ax            ; clear ax
+        xor   ax, ax            ; Set DS to 0FF00h
         push  ax                ; CS to 'return; to
-        mov   ax, 8e00h         ; Clear
+        mov   ax, 0xFF00        ; Set IP to 0
         push  ax                ; CP to 'return' to
         mov   si, text_kernel_jumping
         call  print
