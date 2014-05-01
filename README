@@ -3,10 +3,6 @@ This is the boot loader of Folkol OS.
 build the MBR image with: nasm -f bin -o mbr.image mbr.nasm
 build the kernel image with: nasm -f bin -o kernel.image kernel.nasm
 
-make a disk image with:
 cat mbr.image > disk.image
 cat kernel.image >> disk.image
-
-run it with qemu or bochs
-
-/Applications/Q.app/Contents/MacOS/i386-softmmu.app/Contents/MacOS/i386-softmmu disk.image 
+qemu-system-i386 disk.image
